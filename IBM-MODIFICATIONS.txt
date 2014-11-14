@@ -9,3 +9,10 @@ webview methods need to be run on UI thread starting in Android 4.3
   InAppBrowser would throw a Java exception. Since one of the Java invocations
   to the webview was to make a local url absolute, this was moved out of
   native code to JS.
+
+
+BB10: Use 1-based indexing in notification.confirm
+
+- Cordova RTC work item number: 56456
+- Worklight RTC work item number: 56397
+- Full description: notification.confirm is supposed to use 1-based indexing on the dialog buttons, but blackberry was using the webworks-based 0-based indexing
