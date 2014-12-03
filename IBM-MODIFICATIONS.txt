@@ -1,0 +1,10 @@
+Get BB10 window.blackberry.invoke() to work with WL 6.2 and WebWorks 1.x.
+
+- Cordova RTC work item number: 59037
+- Apache Cordova Jira issue: https://issues.apache.org/jira/browse/CB-5916
+- Markmail / Google Group / StackOverflow reference: 
+- IBM PMR: 41288,057,649
+- Worklight RTC work item number: 58719
+- Full description: the window.blackberry.invoke() method was not working with
+  version 1.x of the WebWorks SDK. It appears that Cordova after 2.8 is
+  geared for WebWorks v2.x. Worklight is still assuming WebWorks v1.x.
