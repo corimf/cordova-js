@@ -20,11 +20,11 @@
 */
 
 module.exports = {
-    id: "blackberry10",
-    bootstrap: function() {
+    id : "blackberry10",
+    bootstrap : function () {
         var cordova = require('cordova'),
             channel = require('cordova/channel'),
-            addDocumentEventListener = document.addEventListener,
+            addEventListener = document.addEventListener,
             webworksReady = false,
             alreadyFired = false,
             listenerRegistered = false;
@@ -34,7 +34,7 @@ module.exports = {
             if (type === "online" || type === "offline") {
                 window.addEventListener.apply(window, arguments);
             } else {
-                addDocumentEventListener.apply(document, arguments);
+                addEventListener.apply(document, arguments);
                 //Trapping when users add listeners to the webworks ready event
                 //This way we can make sure not to fire the event before there is a listener
                 if (type.toLowerCase() === 'webworksready') {
@@ -55,7 +55,6 @@ module.exports = {
             fireWebworksReadyEvent();
         });
 
-
         //Only fire the webworks event when both webworks is ready and a listener is registered
         function fireWebworksReadyEvent() {
             var evt;
@@ -66,82 +65,13 @@ module.exports = {
                 document.dispatchEvent(evt);
             }
         }
-
-        function RemoteFunctionCall(functionUri) {
-            var params = {};
-
-            function composeUri() {
-                return "http://localhost:8472/" + functionUri;
-            }
-
-            function createXhrRequest(uri, isAsync) {
-                var request = new XMLHttpRequest();
-                request.open("POST", uri, isAsync);
-                request.setRequestHeader("Content-Type", "application/json");
-                return request;
-            }
-
-            this.addParam = function (name, value) {
-                params[name] = encodeURIComponent(JSON.stringify(value));
-            };
-
-            this.makeSyncCall = function (success, error) {
-                var requestUri = composeUri(),
-                request = createXhrRequest(requestUri, false),
-                response,
-                errored,
-                cb,
-                data;
-
-                request.send(JSON.stringify(params));
-                response = JSON.parse(decodeURIComponent(request.responseText) || "null");
-                return response;
-            };
-        }
-
-        if(!window.webworks){
-            window.webworks = {};
-        }
-        window.webworks.exec = function (success, fail, service, action, args) {
-            var uri = service + "/" + action,
-            request = new RemoteFunctionCall(uri),
-            callbackId = service + cordova.callbackId++,
-            response,
-            name,
-            didSucceed;
-
-            for (name in args) {
-                if (Object.hasOwnProperty.call(args, name)) {
-                    request.addParam(name, args[name]);
-                }
-            }
-
-            cordova.callbacks[callbackId] = {success:success, fail:fail};
-            request.addParam("callbackId", callbackId);
-
-            response = request.makeSyncCall();
-
-            //Old WebWorks Extension success
-            if (response.code === 42) {
-                if (success) {
-                    success(response.data, response);
-                }
-                delete cordova.callbacks[callbackId];
-            } else if (response.code < 0) {
-                if (fail) {
-                    fail(response.msg, response);
-                }
-                delete cordova.callbacks[callbackId];
-            } else {
-                didSucceed = response.code === cordova.callbackStatus.OK || response.code === cordova.callbackStatus.NO_RESULT;
-                cordova.callbackFromNative(callbackId, didSucceed, response.code, [ didSucceed ? response.data : response.msg ], !!response.keepCallback);
-            }
-        };
-        window.webworks.defineReadOnlyField = function (obj, field, value) {
-            Object.defineProperty(obj, field, {
-                "value": value,
-                "writable": false
-            });
-        };
+        
+        if (!window.blackberry) {
+            window.blackberry = {};
+             window.blackberry.event = {
+                 addEventListener : document.addEventListener,
+                 removeEventListener : document.removeEventListener
+             };
+         }
     }
 };
