@@ -20,38 +20,58 @@
 */
 
 module.exports = {
+    id : "blackberry10",
+    bootstrap : function () {
+        var cordova = require('cordova'),
+            channel = require('cordova/channel'),
+            addEventListener = document.addEventListener,
+            webworksReady = false,
+            alreadyFired = false,
+            listenerRegistered = false;
 
-    id: "blackberry10",
-
-    bootstrap: function() {
-
-        var channel = require('cordova/channel'),
-            addEventListener = document.addEventListener;
-
-        //ready as soon as the plugins are
-        channel.onPluginsReady.subscribe(function () {
-            channel.onNativeReady.fire();
-        });
-
-        //pass document online/offline event listeners to window
+        //override to pass online/offline events to window
         document.addEventListener = function (type) {
             if (type === "online" || type === "offline") {
                 window.addEventListener.apply(window, arguments);
             } else {
                 addEventListener.apply(document, arguments);
+                //Trapping when users add listeners to the webworks ready event
+                //This way we can make sure not to fire the event before there is a listener
+                if (type.toLowerCase() === 'webworksready') {
+                    listenerRegistered = true;
+                    fireWebworksReadyEvent();
+                }
             }
         };
 
-        //map blackberry.event to document
+        channel.onDOMContentLoaded.subscribe(function () {
+            document.addEventListener("webworksready", function () {
+                channel.onNativeReady.fire();
+            });
+        });
+
+        channel.onPluginsReady.subscribe(function () {
+            webworksReady = true;
+            fireWebworksReadyEvent();
+        });
+
+        //Only fire the webworks event when both webworks is ready and a listener is registered
+        function fireWebworksReadyEvent() {
+            var evt;
+            if (listenerRegistered && webworksReady && !alreadyFired) {
+                alreadyFired = true;
+                evt = document.createEvent('Events');
+                evt.initEvent('webworksready', true, true);
+                document.dispatchEvent(evt);
+            }
+        }
+        
         if (!window.blackberry) {
             window.blackberry = {};
-        }
-        window.blackberry.event =
-        {
-            addEventListener: document.addEventListener,
-            removeEventListener: document.removeEventListener
-        };
-
+             window.blackberry.event = {
+                 addEventListener : document.addEventListener,
+                 removeEventListener : document.removeEventListener
+             };
+         }
     }
-
 };

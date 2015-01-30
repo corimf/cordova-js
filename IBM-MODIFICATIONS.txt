@@ -1,0 +1,10 @@
+Adding Webworks 1.x and 2.x support for BB10
+
+- Cordova RTC work item number: 63390
+- Apache Cordova Jira issue: https://issues.apache.org/jira/browse/CB-5916
+- Markmail / Google Group / StackOverflow reference: 
+- Product PMR: 41288,057,649
+- Worklight RTC work item number: 58719
+- Description: Added support for Webworks 1.x, by applying changes to trigger 'webworksready'
+  event, general optimization was performed to support both WW SDKs.
+  Now projects can handle WW 1.x and in case of upgrade, it can support WW 2.x as well.
