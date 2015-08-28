@@ -8,3 +8,9 @@ Adding Webworks 1.x and 2.x support for BB10
 - Description: Added support for Webworks 1.x, by applying changes to trigger 'webworksready'
   event, general optimization was performed to support both WW SDKs.
   Now projects can handle WW 1.x and in case of upgrade, it can support WW 2.x as well.
+
+iOS - iframe bridge failing when <iframe> is removed from DOM
+- Worklight RTC work item number: APAR 86778
+- Apache Cordova Jira issue: CB-7735
+- Markmail or Google Group reference: none
+- adds a fail safe timer that protects against the iframe being unloaded during the poke with a setTimeout function
